@@ -1,0 +1,255 @@
+package com.autminers.headcontrol;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.CreatureSpawner;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemBreakEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Created by jack.marshall on 14/06/2017.
+ */
+public class Main extends JavaPlugin implements Listener {
+
+    public void onEnable(){
+        getServer().getPluginManager().registerEvents(this,this);
+        getConfig().options().copyDefaults(true);
+        saveConfig();
+        getLogger().info(ChatColor.GOLD + "Initialising HeadControl...");
+        getLogger().info(ChatColor.GOLD + "HeadControl initialised successfully.");
+    }
+    public void onDisable(){
+        getLogger().info(ChatColor.GOLD + "Disabling HeadControl...");
+        getLogger().info(ChatColor.GOLD + "HeadControl disabled successfully.");
+    }
+
+    //PLAYER ON JOIN STATISTIC RESET
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent e){
+        Player p = e.getPlayer();
+        if(getConfig().get("heads." + p.getPlayerListName()) == null){
+            getConfig().set("heads." + p.getPlayerListName() + ".level", 1);
+            getConfig().set("heads." + p.getPlayerListName() + ".cowdeposit", 0);
+            getConfig().set("heads." + p.getPlayerListName() + ".pigdeposit", 0);
+            getConfig().set("heads." + p.getPlayerListName() + ".ocelotdeposit", 0);
+            getConfig().set("heads." + p.getPlayerListName() + ".cavespiderdeposit", 0);
+            getConfig().set("heads." + p.getPlayerListName() + ".wolfdeposit", 0);
+            getConfig().set("heads." + p.getPlayerListName() + ".chickendeposit", 0);
+            getConfig().set("heads." + p.getPlayerListName() + ".witherskeletondeposit", 0);
+            getConfig().set("heads." + p.getPlayerListName() + ".slimedeposit", 0);
+            getConfig().set("heads." + p.getPlayerListName() + ".zombiedeposit", 0);
+            getConfig().set("heads." + p.getPlayerListName() + ".skeletondeposit", 0);
+            getConfig().set("heads." + p.getPlayerListName() + ".zombiepigmandeposit", 0);
+            getConfig().set("heads." + p.getPlayerListName() + ".blazedeposit", 0);
+            getConfig().set("heads." + p.getPlayerListName() + ".creeperdeposit", 0);
+            getConfig().set("heads." + p.getPlayerListName() + ".irongolemdeposit", 0);
+            saveConfig();
+            getLogger().info(e.getPlayer().getPlayerListName() + "'s data has been updated.");
+        }
+    }
+
+
+    //HEAD CONTROL MAIN GUI
+
+
+    @EventHandler
+    public void onInvClick(InventoryClickEvent e){
+        Inventory inv = e.getInventory();
+        if(inv.getTitle().equalsIgnoreCase("Head Control")){
+            //Items only have lores and serve no clicking purpose.
+            e.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onCauldronClick(PlayerInteractEvent e){
+        Player p = e.getPlayer();
+        Block b = e.getClickedBlock();
+        if(b.getType().equals(Material.CAULDRON)){
+            openHeadGUI(p);
+        }
+    }
+
+
+    public void openHeadGUI(Player player){
+
+        int cow = getConfig().getInt("heads." + player.getPlayerListName() + ".cowdeposit");
+        int pig = getConfig().getInt("heads." + player.getPlayerListName() + ".pigdeposit");
+        int ocelot = getConfig().getInt("heads." + player.getPlayerListName() + ".ocelotdeposit");
+        int cavespider = getConfig().getInt("heads." + player.getPlayerListName() + ".cavespiderdeposit");
+        int wolf = getConfig().getInt("heads." + player.getPlayerListName() + ".wolfdeposit");
+        int chicken = getConfig().getInt("heads." + player.getPlayerListName() + ".chickendeposit");
+        int witherskeleton = getConfig().getInt("heads." + player.getPlayerListName() + ".witherskeletondeposit");
+        int slime = getConfig().getInt("heads." + player.getPlayerListName() + ".slimedeposit");
+        int zombie = getConfig().getInt("heads." + player.getPlayerListName() + ".zombiedeposit");
+        int skeleton = getConfig().getInt("heads." + player.getPlayerListName() + ".skeletondeposit");
+        int zombiepigman = getConfig().getInt("heads." + player.getPlayerListName() + ".zombiepigmandeposit");
+        int blaze = getConfig().getInt("heads." + player.getPlayerListName() + ".blazedeposit");
+        int creeper = getConfig().getInt("heads." + player.getPlayerListName() + ".creeperdeposit");
+        int irongolem = getConfig().getInt("heads." + player.getPlayerListName() + ".irongolemdeposit");
+
+
+        Inventory gui = Bukkit.createInventory(null, 18, "Head Control");
+
+        ItemStack item = new ItemStack(Material.BARRIER);
+        ItemMeta itemMeta = item.getItemMeta();
+        itemMeta.setDisplayName(ChatColor.GRAY + "" + ChatColor.BOLD + "Cow Heads");
+        List<String> itemLore = new ArrayList<>();
+        itemLore.add(ChatColor.RED + "Heads deposited: " + ChatColor.WHITE + cow);
+        itemLore.add(ChatColor.RED + "Heads needed to rankup: " + ChatColor.WHITE + "1000");
+        itemMeta.setLore(itemLore);
+        item.setItemMeta(itemMeta);
+
+        ItemStack item1 = new ItemStack(Material.BARRIER);
+        ItemMeta item1Meta = item1.getItemMeta();
+        item1Meta.setDisplayName(ChatColor.GRAY + "" + ChatColor.BOLD + "Pig Heads");
+        List<String> item1Lore = new ArrayList<>();
+        item1Lore.add(ChatColor.RED + "Heads deposited: " + ChatColor.WHITE + pig);
+        item1Lore.add(ChatColor.RED + "Heads needed to rankup: " + ChatColor.WHITE + "1500");
+        item1Meta.setLore(item1Lore);
+        item1.setItemMeta(item1Meta);
+
+        ItemStack item2 = new ItemStack(Material.BARRIER);
+        ItemMeta item2Meta = item2.getItemMeta();
+        item2Meta.setDisplayName(ChatColor.GRAY + "" + ChatColor.BOLD + "Ocelot Heads");
+        List<String> item2Lore = new ArrayList<>();
+        item2Lore.add(ChatColor.RED + "Heads deposited: " + ChatColor.WHITE + ocelot);
+        item2Lore.add(ChatColor.RED + "Heads needed to rankup: " + ChatColor.WHITE + "2100");
+        item2Meta.setLore(item2Lore);
+        item2.setItemMeta(item2Meta);
+
+        ItemStack item3 = new ItemStack(Material.BARRIER);
+        ItemMeta item3Meta = item3.getItemMeta();
+        item3Meta.setDisplayName(ChatColor.GRAY + "" + ChatColor.BOLD + "Cave Spider Heads");
+        List<String> item3Lore = new ArrayList<>();
+        item3Lore.add(ChatColor.RED + "Heads deposited: " + ChatColor.WHITE + cavespider);
+        item3Lore.add(ChatColor.RED + "Heads needed to rankup: " + ChatColor.WHITE + "2500");
+        item3Meta.setLore(item3Lore);
+        item3.setItemMeta(item3Meta);
+
+        ItemStack item4 = new ItemStack(Material.BARRIER);
+        ItemMeta item4Meta = item4.getItemMeta();
+        item4Meta.setDisplayName(ChatColor.GRAY + "" + ChatColor.BOLD + "Wolf Heads");
+        List<String> item4Lore = new ArrayList<>();
+        item4Lore.add(ChatColor.RED + "Heads deposited: " + ChatColor.WHITE + wolf);
+        item4Lore.add(ChatColor.RED + "Heads needed to rankup: " + ChatColor.WHITE + "2900");
+        item4Meta.setLore(item4Lore);
+        item4.setItemMeta(item4Meta);
+
+        ItemStack item5 = new ItemStack(Material.BARRIER);
+        ItemMeta item5Meta = item5.getItemMeta();
+        itemMeta.setDisplayName(ChatColor.GRAY + "" + ChatColor.BOLD + "Chicken Heads");
+        List<String> item5Lore = new ArrayList<>();
+        item5Lore.add(ChatColor.RED + "Heads deposited: " + ChatColor.WHITE + chicken);
+        item5Lore.add(ChatColor.RED + "Heads needed to rankup: " + ChatColor.WHITE + "3400");
+        item5Meta.setLore(item5Lore);
+        item5.setItemMeta(item5Meta);
+
+        ItemStack item6 = new ItemStack(Material.BARRIER);
+        ItemMeta item6Meta = item6.getItemMeta();
+        item6Meta.setDisplayName(ChatColor.GRAY + "" + ChatColor.BOLD + "Wither Skeleton Heads");
+        List<String> item6Lore = new ArrayList<>();
+        item6Lore.add(ChatColor.RED + "Heads deposited: " + ChatColor.WHITE + witherskeleton);
+        item6Lore.add(ChatColor.RED + "Heads needed to rankup: " + ChatColor.WHITE + "4000");
+        item6Meta.setLore(item6Lore);
+        item6.setItemMeta(item6Meta);
+
+        ItemStack item7 = new ItemStack(Material.BARRIER);
+        ItemMeta item7Meta = item7.getItemMeta();
+        itemMeta.setDisplayName(ChatColor.GRAY + "" + ChatColor.BOLD + "Slime Heads");
+        List<String> item7Lore = new ArrayList<>();
+        item7Lore.add(ChatColor.RED + "Heads deposited: " + ChatColor.WHITE + slime);
+        item7Lore.add(ChatColor.RED + "Heads needed to rankup: " + ChatColor.WHITE + "4800");
+        item7Meta.setLore(item7Lore);
+        item7.setItemMeta(item7Meta);
+
+        ItemStack item8 = new ItemStack(Material.BARRIER);
+        ItemMeta item8Meta = item8.getItemMeta();
+        item8Meta.setDisplayName(ChatColor.GRAY + "" + ChatColor.BOLD + "Zombie Heads");
+        List<String> item8Lore = new ArrayList<>();
+        item8Lore.add(ChatColor.RED + "Heads deposited: " + ChatColor.WHITE + zombie);
+        item8Lore.add(ChatColor.RED + "Heads needed to rankup: " + ChatColor.WHITE + "5900");
+        item8Meta.setLore(item8Lore);
+        item8.setItemMeta(item8Meta);
+
+        ItemStack item9 = new ItemStack(Material.BARRIER);
+        ItemMeta item9Meta = item9.getItemMeta();
+        item9Meta.setDisplayName(ChatColor.GRAY + "" + ChatColor.BOLD + "Skeleton Heads");
+        List<String> item9Lore = new ArrayList<>();
+        item9Lore.add(ChatColor.RED + "Heads deposited: " + ChatColor.WHITE + skeleton);
+        item9Lore.add(ChatColor.RED + "Heads needed to rankup: " + ChatColor.WHITE + "7000");
+        item9Meta.setLore(item9Lore);
+        item9.setItemMeta(item9Meta);
+
+        ItemStack item10 = new ItemStack(Material.BARRIER);
+        ItemMeta item10Meta = item10.getItemMeta();
+        item10Meta.setDisplayName(ChatColor.GRAY + "" + ChatColor.BOLD + "Zombie Pigman Heads");
+        List<String> item10Lore = new ArrayList<>();
+        item10Lore.add(ChatColor.RED + "Heads deposited: " + ChatColor.WHITE + zombiepigman);
+        item10Lore.add(ChatColor.RED + "Heads needed to rankup: " + ChatColor.WHITE + "11000");
+        item10Meta.setLore(item10Lore);
+        item10.setItemMeta(item10Meta);
+
+        ItemStack item11 = new ItemStack(Material.BARRIER);
+        ItemMeta item11Meta = item11.getItemMeta();
+        item11Meta.setDisplayName(ChatColor.GRAY + "" + ChatColor.BOLD + "Blaze Heads");
+        List<String> item11Lore = new ArrayList<>();
+        item11Lore.add(ChatColor.RED + "Heads deposited: " + ChatColor.WHITE + blaze);
+        item11Lore.add(ChatColor.RED + "Heads needed to rankup: " + ChatColor.WHITE + "17000");
+        item11Meta.setLore(item11Lore);
+        item11.setItemMeta(item11Meta);
+
+        ItemStack item12 = new ItemStack(Material.BARRIER);
+        ItemMeta item12Meta = item12.getItemMeta();
+        item12Meta.setDisplayName(ChatColor.GRAY + "" + ChatColor.BOLD + "Creeper Heads");
+        List<String> item12Lore = new ArrayList<>();
+        item12Lore.add(ChatColor.RED + "Heads deposited: " + ChatColor.WHITE + creeper);
+        item12Lore.add(ChatColor.RED + "Heads needed to rankup: " + ChatColor.WHITE + "25000");
+        item12Meta.setLore(item12Lore);
+        item12.setItemMeta(item12Meta);
+
+        ItemStack item13 = new ItemStack(Material.BARRIER);
+        ItemMeta item13Meta = item13.getItemMeta();
+        item13Meta.setDisplayName(ChatColor.GRAY + "" + ChatColor.BOLD + "Iron Golem Heads");
+        List<String> item13Lore = new ArrayList<>();
+        item13Lore.add(ChatColor.RED + "Heads deposited: " + ChatColor.WHITE + irongolem);
+        item13Lore.add(ChatColor.RED + "Heads needed to rankup: " + ChatColor.WHITE + "40000");
+        item13Meta.setLore(item13Lore);
+        item13.setItemMeta(item13Meta);
+
+        gui.setItem(0, item);
+        gui.setItem(1, item1);
+        gui.setItem(2, item2);
+        gui.setItem(3, item3);
+        gui.setItem(4, item4);
+        gui.setItem(5, item5);
+        gui.setItem(6, item6);
+        gui.setItem(7, item7);
+        gui.setItem(8, item8);
+        gui.setItem(9, item9);
+        gui.setItem(10, item10);
+        gui.setItem(11, item11);
+        gui.setItem(12, item12);
+        gui.setItem(13, item13);
+
+        player.openInventory(gui);
+    }
+
+
+}
